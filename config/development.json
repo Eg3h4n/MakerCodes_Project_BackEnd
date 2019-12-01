@@ -1,0 +1,6 @@
+{
+  "name": "Gamebook Rest API - Development",
+  "mongodb": {
+    "host": "mongodb://localhost:27017/gamebook"
+  }
+}

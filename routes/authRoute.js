@@ -4,7 +4,7 @@ const UserModel = require("../models/user");
 const { registerValidation, loginValidation } = require("../validation");
 const bcrypt = require("bcrypt");
 const _ = require("lodash");
-const JWT_SECRET = require("../config/secret");
+require("dotenv").config();
 
 router.post("/register", async (req, res) => {
   //Validation
@@ -57,7 +57,7 @@ router.post("/login", async (req, res) => {
       return res.status(400).send("Invalid email or password!");
 
     //if email and password are valid we create a jwt token
-    const token = jwt.sign(_.pick(user, ["_id"]), JWT_SECRET);
+    const token = jwt.sign(_.pick(user, ["_id"]), process.env.JWT_SECRET);
     return res.header("Authorization", token).send();
   } else {
     return res.status(400).send("Invalid email or password!");

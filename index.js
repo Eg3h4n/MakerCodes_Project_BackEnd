@@ -1,14 +1,14 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const config = require("config");
+require("dotenv").config();
 
 const server = express();
 
 //MongoDB
-console.log(config.get("name"));
+console.log(process.env.DB_NAME);
 mongoose
-  .connect(config.get("mongodb.host"), {
+  .connect(process.env.DB_HOST, {
     useNewUrlParser: true,
     useUnifiedTopology: true
   })

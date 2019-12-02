@@ -1,9 +1,11 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-require("dotenv").config();
+const dotenv = require("dotenv");
 
 const server = express();
+dotenv.config();
+mongoose.set("useCreateIndex", true);
 
 //MongoDB
 console.log(process.env.DB_NAME);
@@ -25,7 +27,7 @@ const authRoute = require("./routes/authRoute");
 
 server.use("/auth", authRoute);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 server.listen(PORT, () =>
   console.log(`Server is listening on PORT ${PORT}...`)
 );

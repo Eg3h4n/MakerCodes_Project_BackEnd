@@ -4,7 +4,6 @@ const UserModel = require("../models/user");
 const { registerValidation, loginValidation } = require("../validation");
 const bcrypt = require("bcrypt");
 const _ = require("lodash");
-require("dotenv").config();
 
 router.post("/register", async (req, res) => {
   //Validation
@@ -17,7 +16,7 @@ router.post("/register", async (req, res) => {
 
   //Checking if username is taken
   const userNameExists = await UserModel.findOne({
-    username: req.body.userName
+    username: req.body.username
   });
   if (userNameExists) return res.status(400).send("Username is taken!");
 
@@ -58,7 +57,7 @@ router.post("/login", async (req, res) => {
 
     //if email and password are valid we create a jwt token
     const token = jwt.sign(_.pick(user, ["_id"]), process.env.JWT_SECRET);
-    return res.header("Authorization", token).send();
+    return res.header("Auth-Token", token).send(`Welcome back ${user.email}`);
   } else {
     return res.status(400).send("Invalid email or password!");
   }

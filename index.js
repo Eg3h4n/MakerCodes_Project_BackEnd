@@ -1,10 +1,15 @@
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const dotenv = require("dotenv");
+const passport = require("passport");
+const initializePassport = require("./config/passport-config");
+const session = require("express-session");
 
 const server = express();
-dotenv.config();
+//To remove the deprecation warning of mongoose
 mongoose.set("useCreateIndex", true);
 
 //MongoDB
@@ -21,11 +26,27 @@ mongoose
 server.use(express.urlencoded({ extended: true }));
 server.use(express.json());
 server.use(cors());
+server.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    //to disable saving over unchanged session
+    resave: false,
+    //to disable saving empty sessions
+    saveUninitialized: false
+  })
+);
+server.use(passport.initialize());
+server.use(passport.session());
+initializePassport(passport);
 
 //Routes
 const authRoute = require("./routes/authRoute");
+const profileRoute = require("./routes/profileRoute");
+const dashboardRoute = require("./routes/dashboardRoute");
 
 server.use("/auth", authRoute);
+server.use("/profile", profileRoute);
+server.use("/dashboard", dashboardRoute);
 
 const PORT = process.env.PORT;
 server.listen(PORT, () =>

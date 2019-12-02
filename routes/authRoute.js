@@ -4,43 +4,63 @@ const UserModel = require("../models/user");
 const { registerValidation, loginValidation } = require("../validation");
 const bcrypt = require("bcrypt");
 const _ = require("lodash");
+const verifyToken = require("../middleware/verifyToken");
+const validator = require("express-joi-validation").createValidator({});
+const passport = require("passport");
 
-router.post("/register", async (req, res) => {
-  //Validation
+router.post(
+  "/register",
+  validator.body(registerValidation),
+  async (req, res) => {
+    /* //Validation
   const { error } = registerValidation(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
+  if (error) return res.status(400).send(error.details[0].message); */
 
-  //Checking if email already in database
-  const emailExists = await UserModel.findOne({ email: req.body.email });
-  if (emailExists) return res.status(400).send("Email already exists!");
+    //Checking if email already in database
+    const emailExists = await UserModel.findOne({ email: req.body.email });
+    if (emailExists) return res.status(400).send("Email already exists!");
 
-  //Checking if username is taken
-  const userNameExists = await UserModel.findOne({
-    username: req.body.username
-  });
-  if (userNameExists) return res.status(400).send("Username is taken!");
+    //Checking if username is taken
+    const userNameExists = await UserModel.findOne({
+      username: req.body.username
+    });
+    if (userNameExists) return res.status(400).send("Username is taken!");
 
-  //Hashing the password
-  const salt = await bcrypt.genSalt();
-  const hashedPassword = await bcrypt.hash(req.body.password, salt);
+    //Hashing the password
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
-  //Creation
-  const user = new UserModel({
-    username: req.body.username,
-    name: req.body.name,
-    surname: req.body.surname,
-    email: req.body.email,
-    password: hashedPassword
-  });
-  try {
-    const savedUser = await user.save();
-    res.send(savedUser);
-  } catch (err) {
-    res.status(400).send(err);
+    //Creation
+    const user = new UserModel({
+      username: req.body.username,
+      name: req.body.name,
+      surname: req.body.surname,
+      email: req.body.email,
+      password: hashedPassword
+    });
+    try {
+      const savedUser = await user.save();
+      res.send(savedUser);
+    } catch (err) {
+      res.status(400).send(err);
+    }
   }
-});
+);
 
-router.post("/login", async (req, res) => {
+router.post(
+  "/login",
+  validator.body(loginValidation),
+  passport.authenticate("local", {
+    //successRedirect: "/profile/",
+    failureRedirect: "/login",
+    failureMessage: true
+  }),
+  (req, res) => {
+    res.redirect("/profile/" + req.user.username);
+  }
+);
+
+/* router.post("/login", async (req, res) => {
   //Validation
   const { error } = loginValidation(req.body);
   if (error) return res.status(400).send(error.details[0].message);
@@ -61,6 +81,11 @@ router.post("/login", async (req, res) => {
   } else {
     return res.status(400).send("Invalid email or password!");
   }
+}); */
+
+router.get("/logout", (req, res) => {
+  req.logOut();
+  res.redirect("/");
 });
 
 module.exports = router;

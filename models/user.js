@@ -22,7 +22,8 @@ const UserSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true
-  }
+  },
+  games: [{ type: mongoose.Schema.Types.ObjectId, ref: "game" }]
 });
 
 const UserModel = mongoose.model("user", UserSchema);

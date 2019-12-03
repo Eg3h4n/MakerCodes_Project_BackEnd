@@ -2,21 +2,82 @@ const router = require("express").Router();
 const jwt = require("jsonwebtoken");
 const UserModel = require("../models/user");
 const { registerValidation, loginValidation } = require("../validation");
-const bcrypt = require("bcrypt");
+//const bcrypt = require("bcrypt");
 const _ = require("lodash");
-const verifyToken = require("../middleware/verifyToken");
+const checkAuth = require("../middleware/checkAuth");
 const validator = require("express-joi-validation").createValidator({});
 const passport = require("passport");
 
 router.post(
   "/register",
-  validator.body(registerValidation),
+  [
+    checkAuth,
+    validator.body(registerValidation),
+    passport.authenticate("register", { session: false })
+  ],
   async (req, res) => {
-    /* //Validation
+    //Adding the optional parts to the user here
+    const user = await UserModel.findByIdAndUpdate(
+      req.user._id,
+      {
+        name: req.body.name,
+        surname: req.body.surname
+      },
+      {
+        new: true
+      }
+    );
+
+    await user.save();
+    //signing this user's token here
+    const token = jwt.sign(_.pick(user, ["_id"]), process.env.JWT_SECRET);
+    return res.json({ success: true, token: "Bearer " + token });
+  }
+);
+
+router.post(
+  "/login",
+  [
+    checkAuth,
+    validator.body(loginValidation),
+    passport.authenticate("login", { session: false })
+  ],
+  async (req, res) => {
+    const token = jwt.sign(_.pick(req.user, ["_id"]), process.env.JWT_SECRET);
+    return res.json({ success: true, token: "Bearer " + token });
+  }
+);
+
+//This will redirect user to steam login page
+router.get(
+  "/steam",
+  passport.authenticate("steam", { failureRedirect: "/" }),
+  (req, res) => {}
+);
+//user will return here after steam authentication is complete
+router.get(
+  "/steam/return",
+  (req, res, next) => {
+    req.url = req.originalUrl;
+    next();
+  },
+  passport.authenticate("steam", { failureRedirect: "/login" }),
+  async (req, res) => {
+    const user = req.user;
+
+    res.send(user);
+  }
+);
+
+// router.post(
+//   "/register",
+//   validator.body(registerValidation),
+//   async (req, res) => {
+/* //Validation
   const { error } = registerValidation(req.body);
   if (error) return res.status(400).send(error.details[0].message); */
 
-    //Checking if email already in database
+/*     //Checking if email already in database
     const emailExists = await UserModel.findOne({ email: req.body.email });
     if (emailExists) return res.status(400).send("Email already exists!");
 
@@ -45,27 +106,14 @@ router.post(
       res.status(400).send(err);
     }
   }
-);
+); */
 
-router.post(
-  "/login",
-  validator.body(loginValidation),
-  passport.authenticate("local", {
-    //successRedirect: "/profile/",
-    failureRedirect: "/login",
-    failureMessage: true
-  }),
-  (req, res) => {
-    res.redirect("/profile/" + req.user.username);
-  }
-);
-
-/* router.post("/login", async (req, res) => {
-  //Validation
+//router.post("/login", validator.body(loginValidation), async (req, res) => {
+/* //Validation
   const { error } = loginValidation(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
+  if (error) return res.status(400).send(error.details[0].message); */
 
-  //Checking if email exists in database
+/* //Checking if email exists in database
   const user = await UserModel.findOne({ email: req.body.email });
   if (user) {
     const isPasswordValid = await bcrypt.compare(

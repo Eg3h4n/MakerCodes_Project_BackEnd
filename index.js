@@ -5,19 +5,20 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const passport = require("passport");
-const initializePassport = require("./config/passport-config");
-const session = require("express-session");
+require("./config/passport-config");
+//const session = require("express-session");
 
 const server = express();
-//To remove the deprecation warning of mongoose
-mongoose.set("useCreateIndex", true);
 
 //MongoDB
 console.log(process.env.DB_NAME);
 mongoose
   .connect(process.env.DB_HOST, {
+    //To remove the deprecation warning of mongoose
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+    useCreateIndex: true
   })
   .then(() => console.log("Connected to MongoDB..."))
   .catch(err => console.log("MongoDB error: ", err.message));
@@ -26,7 +27,7 @@ mongoose
 server.use(express.urlencoded({ extended: true }));
 server.use(express.json());
 server.use(cors());
-server.use(
+/* server.use(
   session({
     secret: process.env.SESSION_SECRET,
     //to disable saving over unchanged session
@@ -34,10 +35,10 @@ server.use(
     //to disable saving empty sessions
     saveUninitialized: false
   })
-);
+); */
 server.use(passport.initialize());
-server.use(passport.session());
-initializePassport(passport);
+//server.use(passport.session());
+//initializePassport(passport);
 
 //Routes
 const authRoute = require("./routes/authRoute");

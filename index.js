@@ -44,10 +44,12 @@ server.use(passport.initialize());
 const authRoute = require("./routes/authRoute");
 const profileRoute = require("./routes/profileRoute");
 const dashboardRoute = require("./routes/dashboardRoute");
+const gamesRoute = require("./routes/gamesRoute");
 
 server.use("/auth", authRoute);
 server.use("/profile", profileRoute);
 server.use("/dashboard", dashboardRoute);
+server.use("/games", gamesRoute);
 
 const PORT = process.env.PORT;
 server.listen(PORT, () =>

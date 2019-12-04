@@ -13,7 +13,12 @@ const GameSchema = new mongoose.Schema({
   releaseYear: {
     type: Number,
     required: true
-  }
+  },
+  genres: [
+    {
+      type: String
+    }
+  ]
 });
 
 const GameModel = mongoose.model("game", GameSchema);

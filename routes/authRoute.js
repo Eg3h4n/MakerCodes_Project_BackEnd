@@ -44,7 +44,13 @@ router.post(
   ],
   async (req, res) => {
     const token = jwt.sign(_.pick(req.user, ["_id"]), process.env.JWT_SECRET);
-    return res.json({ success: true, token: "Bearer " + token });
+
+    console.log(`welcome ${req.user.username}`);
+    return res.json({
+      success: true,
+      token: "Bearer " + token,
+      user: req.user
+    });
   }
 );
 

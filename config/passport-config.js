@@ -44,7 +44,7 @@ passport.use(
         const savedUser = await user.save();
         return done(null, savedUser);
       } catch (err) {
-        done(err);
+        return done(err);
       }
     }
   )

@@ -31,7 +31,7 @@ router.post(
     await user.save();
     //signing this user's token here
     const token = jwt.sign(_.pick(user, ["_id"]), process.env.JWT_SECRET);
-    return res.json({ success: true, token: "Bearer " + token });
+    return res.json({ success: true, token: "Bearer " + token, user: user });
   }
 );
 
@@ -43,7 +43,10 @@ router.post(
     passport.authenticate("login", { session: false })
   ],
   async (req, res) => {
-    const token = jwt.sign(_.pick(req.user, ["_id"]), process.env.JWT_SECRET);
+    const token = await jwt.sign(
+      _.pick(req.user, ["_id"]),
+      process.env.JWT_SECRET
+    );
 
     console.log(`welcome ${req.user.username}`);
     return res.json({
@@ -137,9 +140,9 @@ router.get(
   }
 }); */
 
-router.get("/logout", (req, res) => {
+/* router.get("/logout", (req, res) => {
   req.logOut();
   res.redirect("/");
-});
+}); */
 
 module.exports = router;

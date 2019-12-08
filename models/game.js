@@ -14,6 +14,9 @@ const GameSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  imageURL: {
+    type: String
+  },
   genres: [
     {
       type: String

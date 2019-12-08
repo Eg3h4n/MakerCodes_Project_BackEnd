@@ -7,11 +7,25 @@ router.get(
   "/:username",
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
-    const user = await UserModel.findOne({ username: req.params.username });
+    const user = await UserModel.findOne({
+      username: req.params.username
+    }).populate("games");
 
     if (!user) return res.status(404).send("User not found!");
 
-    res.json(_.pick(user, ["username", "name", "surname", "email", "games"]));
+    _.reverse(user.games);
+
+    res.json(
+      _.pick(user, [
+        "username",
+        "name",
+        "surname",
+        "email",
+        "games",
+        "avatarURL",
+        "memberSince"
+      ])
+    );
   }
 );
 

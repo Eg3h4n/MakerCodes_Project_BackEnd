@@ -23,6 +23,13 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  memberSince: {
+    type: Date,
+    default: Date.now()
+  },
+  avatarURL: {
+    type: String
+  },
   games: [{ type: mongoose.Schema.Types.ObjectId, ref: "game" }]
 });
 

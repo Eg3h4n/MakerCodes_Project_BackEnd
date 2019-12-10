@@ -4,6 +4,16 @@ const _ = require("lodash");
 const passport = require("passport");
 
 router.get(
+  "/",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    const users = await UserModel.find();
+
+    res.send(users);
+  }
+);
+
+router.get(
   "/:username",
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {

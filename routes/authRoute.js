@@ -67,7 +67,7 @@ router.get(
 router.get(
   "/dashboard",
   (req, res, next) => {
-    req.url = "http://localhost:3000/dashboard";
+    req.url = "http://localhost:3000";
     next();
   },
   passport.authenticate("steam", { failureRedirect: "/" }),

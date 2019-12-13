@@ -10,7 +10,7 @@ router.get(
   async (req, res) => {
     const user = await UserModel.findById(req.user._id).populate("games");
 
-    _.reverse(user.games);
+    //_.reverse(user.games);
 
     res.json(
       _.pick(user, [

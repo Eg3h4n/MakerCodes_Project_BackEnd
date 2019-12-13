@@ -109,7 +109,7 @@ passport.use(
   "steam",
   new SteamStrategy(
     {
-      returnURL: "http://localhost:3000/dashboard",
+      returnURL: "http://localhost:3000/auth/steam/return",
       realm: "http://localhost:3000/",
       apiKey: "0D26FC461BF1196D78EE2CC601A1E54D"
     },

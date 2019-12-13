@@ -74,11 +74,9 @@ router.get(
   async (req, res) => {
     const user = req.user;
 
-    const token = jwt.sign(user, process.env.JWT_SECRET);
-
     console.log(user);
 
-    res.json(user, token);
+    res.json(user);
   }
 );
 

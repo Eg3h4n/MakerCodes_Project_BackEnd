@@ -65,18 +65,16 @@ router.get(
 );
 //user will return here after steam authentication is complete
 router.get(
-  "/dashboard",
+  "/steam/return",
   (req, res, next) => {
-    req.url = "http://localhost:3000/dashboard";
+    req.url = req.originalUrl;
     next();
   },
   passport.authenticate("steam", { failureRedirect: "/login" }),
   async (req, res) => {
     const user = req.user;
 
-    console.log(user);
-
-    res.json(user);
+    res.send(user);
   }
 );
 

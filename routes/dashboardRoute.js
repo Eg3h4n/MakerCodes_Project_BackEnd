@@ -6,7 +6,7 @@ const _ = require("lodash");
 
 router.get(
   "/",
-  //passport.authenticate("jwt", { session: false }),
+  passport.authenticate("jwt", { session: false }),
   async (req, res) => {
     const user = await UserModel.findById(req.user._id).populate("games");
 
